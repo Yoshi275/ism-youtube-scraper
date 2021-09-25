@@ -16,7 +16,11 @@ def main():
         generate_csv_of_videos_from_youtuber(username)
 
 def generate_csv_of_videos_from_youtuber(channel_name):
-    DEVELOPER_KEY = config('DEVELOPER_KEY', default='')
+    try:
+        DEVELOPER_KEY = config('DEVELOPER_KEY', default='')
+    except:
+        print("API key loading failed. Please check that you have a .env file containing the DEVELOPER_KEY variable, a valid YouTube Data API key")
+        return
     CHANNEL_NAME = channel_name
     FILE_NAME = CHANNEL_NAME + "_videos.json" 
     CSV_FILE_NAME = CHANNEL_NAME + "_videos.csv"
