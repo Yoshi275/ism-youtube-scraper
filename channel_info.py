@@ -38,6 +38,29 @@ def youtube_username_to_id(developerKey, channelName):
     # channel_id = json_response['items'][0]['id']
     # return channel_id
 
+def youtube_id_to_channel_name(developerKey, channelId):
+    YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
+    YOUTUBE_API_ENDPOINT = "channels"
+
+    query = {
+        'key': developerKey,
+        'id': channelId,
+        'part': 'snippet'
+    }
+
+    url = YOUTUBE_API_URL + "/" + YOUTUBE_API_ENDPOINT
+
+    try:
+        response = requests.get(url, params=query)
+        json_response = json.loads(response.text)
+        assert 'items' in json_response
+    except AssertionError:
+        print("YouTube ID given is invalid. Please retry.")
+        return
+    else:
+        channel_name = json_response['items'][0]['snippet']['title']
+        return channel_name
+
 def get_all_videos_from(developer_key, channel_id):
     # return get_page_of_videos_from(developer_key, channel_id, None)
     video_arr = []

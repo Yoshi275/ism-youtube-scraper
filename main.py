@@ -13,7 +13,8 @@ def main():
     usernames_arr = youtuber_username_inputs.split(',')
     print(usernames_arr)
     for username in usernames_arr:
-        generate_csv_of_videos_from_youtuber(username)
+        # generate_csv_of_videos_from_youtuber(username)
+        generate_csv_of_videos_from_youtube_channel_id(username)
 
 def generate_csv_of_videos(developer_key, channel_id, uploader_username_or_id, csv_file_name):
     videos = get_all_videos_from(developer_key, channel_id)
@@ -34,6 +35,20 @@ def generate_csv_of_videos(developer_key, channel_id, uploader_username_or_id, c
         }
         videosDf = videosDf.append(new_row, ignore_index=True)
     videosDf.to_csv(csv_file_name, index=False)
+
+def generate_csv_of_videos_from_youtube_channel_id(channel_id):
+    try:
+        DEVELOPER_KEY = config('DEVELOPER_KEY', default='')
+    except:
+        print("API key loading failed. Please check that you have a .env file containing the DEVELOPER_KEY variable, a valid YouTube Data API key")
+        return
+    channel_name = youtube_id_to_channel_name(DEVELOPER_KEY, channel_id)
+    if not channel_id:
+        return
+    print("Retrieving {}'s videos".format(channel_name))
+    CHANNEL_NAME = channel_name
+    CSV_FILE_NAME = CHANNEL_NAME + "_videos.csv"
+    generate_csv_of_videos(DEVELOPER_KEY, channel_id, CHANNEL_NAME, CSV_FILE_NAME)
 
 
 def generate_csv_of_videos_from_youtuber(channel_name):
