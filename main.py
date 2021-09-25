@@ -8,13 +8,19 @@ from decouple import config
 ### python main.py
 
 def main():
-    print("In the format of a case-sensitive comma-separated list \ne.g.: j1mmyb0bba \ne.g.: j1mmyb0bba,PointlessBlog,MarcusButlerTv")
-    youtuber_username_inputs = input("Enter YouTubers to retrieve videos from: \n")
-    usernames_arr = youtuber_username_inputs.split(',')
-    print(usernames_arr)
-    for username in usernames_arr:
-        # generate_csv_of_videos_from_youtuber(username)
-        generate_csv_of_videos_from_youtube_channel_id(username)
+    print("In the format of a case-sensitive comma-separated list \ne.g.: danisnotonfire \ne.g.: j1mmyb0bba,PointlessBlog,id=UCPvi4_6AZtfND4ILv82s3wA")
+    print("Accepts channel IDs (/channel/<CHANNEL_ID>) or usernames (/user/<USERNAME>) \nPut 'id=' in front of ID to retrieve videos by ID instead.")
+    youtuber_username_or_id_inputs = input("Enter YouTubers to retrieve videos from: \n")
+    input_arr = youtuber_username_or_id_inputs.split(',')
+    usernames_or_id_arr = [i.strip() for i in input_arr]
+    print(usernames_or_id_arr)
+    for username_or_id in usernames_or_id_arr:
+        if username_or_id[0:3] == "id=":
+            youtube_channel_id = username_or_id[3:]
+            generate_csv_of_videos_from_youtube_channel_id(youtube_channel_id)
+        else:
+            generate_csv_of_videos_from_youtuber(username_or_id)
+
 
 def generate_csv_of_videos(developer_key, channel_id, uploader_username_or_id, csv_file_name):
     videos = get_all_videos_from(developer_key, channel_id)
