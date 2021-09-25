@@ -15,6 +15,27 @@ def main():
     for username in usernames_arr:
         generate_csv_of_videos_from_youtuber(username)
 
+def generate_csv_of_videos(developer_key, channel_id, uploader_username_or_id, csv_file_name):
+    videos = get_all_videos_from(developer_key, channel_id)
+    if not videos:
+        return
+    tempVideosDf = pd.DataFrame(videos)    
+    videosDf = pd.DataFrame(columns=['Id', 'Title', 'UploaderUsername', 'DateUploaded', 'VideoLink', 'Status', 'IsCollab']) 
+
+    for index, row in tempVideosDf.iterrows():
+        new_row = {
+            'Id': row['video_id'],
+            'Title': row['title'],
+            'UploaderUsername': uploader_username_or_id,
+            'DateUploaded': row['publish_time'],
+            'VideoLink': "youtube.com/watch?v=" + row['video_id'],
+            'Status': 'Public',
+            'IsCollab': ''
+        }
+        videosDf = videosDf.append(new_row, ignore_index=True)
+    videosDf.to_csv(csv_file_name, index=False)
+
+
 def generate_csv_of_videos_from_youtuber(channel_name):
     try:
         DEVELOPER_KEY = config('DEVELOPER_KEY', default='')
@@ -22,35 +43,14 @@ def generate_csv_of_videos_from_youtuber(channel_name):
         print("API key loading failed. Please check that you have a .env file containing the DEVELOPER_KEY variable, a valid YouTube Data API key")
         return
     CHANNEL_NAME = channel_name
-    FILE_NAME = CHANNEL_NAME + "_videos.json" 
     CSV_FILE_NAME = CHANNEL_NAME + "_videos.csv"
     print("Retrieving {}'s videos".format(CHANNEL_NAME))
 
     channel_id = youtube_username_to_id(DEVELOPER_KEY, CHANNEL_NAME)
     if not channel_id:
         return
-    videos = get_all_videos_from(DEVELOPER_KEY, channel_id)
-    if not videos:
-        return
-    with open(FILE_NAME, "w") as write_file:
-        json.dump(videos, write_file)
-    df = pd.read_json(FILE_NAME)
-    # video_id, channel_id, title, publish_time
-    videosDf = pd.DataFrame(columns=['Id', 'Title', 'UploaderUsername', 'DateUploaded', 'VideoLink', 'Status', 'IsCollab']) 
-
-    for index, row in df.iterrows():
-        new_row = {
-            'Id': row['video_id'],
-            'Title': row['title'],
-            'UploaderUsername': CHANNEL_NAME,
-            'DateUploaded': row['publish_time'],
-            'VideoLink': "youtube.com/watch?v=" + row['video_id'],
-            'Status': 'Public',
-            'IsCollab': ''
-        }
-        videosDf = videosDf.append(new_row, ignore_index=True)
-
-    videosDf.to_csv(CSV_FILE_NAME, index=False)
+    else:
+        generate_csv_of_videos(DEVELOPER_KEY, channel_id, CHANNEL_NAME, CSV_FILE_NAME)
 
 if __name__ == "__main__":
     main()
