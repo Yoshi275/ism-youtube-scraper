@@ -21,16 +21,12 @@ def fill_all_channel_ids(developer_key, csv_input_file, csv_output_file):
 # output: csv table with third col "GoogleName" filled, if "GoogleName" != "YoutuberUsername"
 def fill_all_google_names(developer_key, csv_input_file, csv_output_file):
     df = pd.read_csv(csv_input_file)
-    # print(df.dtypes)
     df['GoogleName'] = df['GoogleName'].astype(object)
-    print(df.dtypes)
 
     for index, row in df.iterrows():
-        # if not pd.isna(df.loc[index, 'YoutubeUsername']) and pd.isna(df.loc[index, 'ChannelID']):
         print(df.loc[index, 'ChannelID'])
         channel_id = df.at[index, 'ChannelID']
         channel_name = youtube_id_to_channel_name(developer_key, channel_id)
-        # youtube_username = df.at[index, 'YoutubeUsername']
         if pd.isna(df.loc[index, 'YoutubeUsername']) or (channel_name != df.loc[index, 'YoutubeUsername']):
         # if channel name is different from Youtube username, then add channel name as GoogleName
             print(channel_name)
@@ -45,7 +41,6 @@ def fill_all_statistics(developer_key, csv_input_file, csv_output_file):
     df['ViewCount'] = df['ViewCount'].astype(object)
     df['SubscriberCount'] = df['SubscriberCount'].astype(object)
     df['VideosAvailable'] = df['VideosAvailable'].astype(object)
-    print(df.dtypes)
 
     for index, row in df.iterrows():
         print(df.loc[index, 'ChannelID'])

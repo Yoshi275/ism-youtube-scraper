@@ -33,10 +33,6 @@ def youtube_username_to_id(developerKey, channelName):
     else:
         channel_id = json_response['items'][0]['id']
         return channel_id
-    # if 'nextPageToken' not in json_response:
-        
-    # channel_id = json_response['items'][0]['id']
-    # return channel_id
 
 def youtube_id_to_statistics(developerKey, channel_id):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
@@ -91,19 +87,14 @@ def youtube_id_to_channel_name(developerKey, channelId):
         return channel_name
 
 def get_all_videos_from(developer_key, channel_id):
-    # return get_page_of_videos_from(developer_key, channel_id, None)
     video_arr = []
     next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, None)
     video_arr += new_video_dict_page
-    # video_dict = { **video_dict, **new_video_dict_page}
 
     while next_page_token != None:
         print("Adding 50 more videos with page ID: {}".format(next_page_token))
-        # print(next_page_token)
         next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, next_page_token)
         video_arr += new_video_dict_page
-        # video_dict = { **video_dict, **new_video_dict_page}
-    # print(video_dict)
     print("Total number of videos found: {}\n".format(len(video_arr)))
     return video_arr
 
@@ -149,15 +140,6 @@ def get_page_of_videos_from(developer_key, channel_id, next_page_token):
             'title': html.unescape(search_result['snippet']['title']),
             'publish_time': search_result['snippet']['publishTime']
         })
-        # video_dict[search_result['id']['videoId']] = {
-            # 'channel_id': search_result['snippet']['channelId'],
-            # 'title': search_result['snippet']['title'],
-            # 'publish_time': search_result['snippet']['publishTime']
-        # }
-    
-    # print(is_next_page_present)
-    # print(video_dict)
-    # print(len(video_dict))
 
     if (is_next_page_present):
         return is_next_page_present, video_arr
