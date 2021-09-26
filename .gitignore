@@ -1,0 +1,6 @@
+*.csv
+!example_videos.csv
+env/
+venv/
+__pycache__/
+.env
