@@ -53,7 +53,7 @@ def generate_csv_of_videos_from_youtube_channel_id(channel_id):
         return
     print("Retrieving {}'s videos".format(channel_name))
     CHANNEL_NAME = channel_name
-    CSV_FILE_NAME = CHANNEL_NAME + "_videos.csv"
+    CSV_FILE_NAME = "output/" + CHANNEL_NAME + "_videos.csv"
     generate_csv_of_videos(DEVELOPER_KEY, channel_id, CHANNEL_NAME, CSV_FILE_NAME)
 
 
@@ -64,7 +64,7 @@ def generate_csv_of_videos_from_youtuber(channel_name):
         print("API key loading failed. Please check that you have a .env file containing the DEVELOPER_KEY variable, a valid YouTube Data API key")
         return
     CHANNEL_NAME = channel_name
-    CSV_FILE_NAME = CHANNEL_NAME + "_videos.csv"
+    CSV_FILE_NAME = "output/" + CHANNEL_NAME + "_videos.csv"
     print("Retrieving {}'s videos".format(CHANNEL_NAME))
 
     channel_id = youtube_username_to_id(DEVELOPER_KEY, CHANNEL_NAME)
