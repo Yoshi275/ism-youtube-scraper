@@ -38,6 +38,26 @@ def fill_all_google_names(developer_key, csv_input_file, csv_output_file):
     df.to_csv(csv_output_file, index=False)
     return
 
+# input: csv table with first col "ChannelID" filled
+# output: csv table with third, fourth, sixth col "ViewCount", "SubscriberCount" and "VideosAvailable" filled respectively
+def fill_all_statistics(developer_key, csv_input_file, csv_output_file):
+    df = pd.read_csv(csv_input_file)
+    df['ViewCount'] = df['ViewCount'].astype(object)
+    df['SubscriberCount'] = df['SubscriberCount'].astype(object)
+    df['VideosAvailable'] = df['VideosAvailable'].astype(object)
+    print(df.dtypes)
+
+    for index, row in df.iterrows():
+        print(df.loc[index, 'ChannelID'])
+        channel_id = df.at[index, 'ChannelID']
+        view_count, subscriber_count, video_count = youtube_id_to_statistics(developer_key, channel_id)
+        print(view_count, subscriber_count, video_count)
+        df.at[index, 'ViewCount'] = view_count
+        df.at[index, 'SubscriberCount'] = subscriber_count
+        df.at[index, 'VideosAvailable'] = video_count
+    df.to_csv(csv_output_file, index=False)
+    return
+
 # removes all whitespaces from YoutubeUsername column
 def remove_all_whitespaces(developer_key, csv_input_file, csv_output_file):
     df = pd.read_csv(csv_input_file)
@@ -57,10 +77,11 @@ def main():
         print("API key loading failed. Please check that you have a .env file containing the DEVELOPER_KEY variable, a valid YouTube Data API key")
         return
     CSV_INPUT_FILE = "channel_info_raw_data.csv"
-    CSV_OUTPUT_FILE = "channel_info_raw_data.csv"
+    CSV_OUTPUT_FILE = CSV_INPUT_FILE
     remove_all_whitespaces(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
     fill_all_channel_ids(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
     fill_all_google_names(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
+    fill_all_statistics(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
 
 if __name__ == "__main__":
     main()

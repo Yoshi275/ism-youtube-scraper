@@ -38,6 +38,35 @@ def youtube_username_to_id(developerKey, channelName):
     # channel_id = json_response['items'][0]['id']
     # return channel_id
 
+def youtube_id_to_statistics(developerKey, channel_id):
+    YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
+    YOUTUBE_API_ENDPOINT = "channels"
+
+    query = {
+        'key': developerKey,
+        'id': channel_id,
+        'part': 'statistics'
+    }
+
+    url = YOUTUBE_API_URL + "/" + YOUTUBE_API_ENDPOINT
+
+    try:
+        response = requests.get(url, params=query)
+        json_response = json.loads(response.text)
+        assert 'items' in json_response
+    except AssertionError:
+        print("YouTube ID given is invalid. Please retry.")
+        return
+    else:
+        view_count = json_response['items'][0]['statistics']['viewCount']
+        is_subscriber_count_hidden = json_response['items'][0]['statistics']['hiddenSubscriberCount']
+        if is_subscriber_count_hidden:
+            subscriber_count = 'hidden'
+        else:
+            subscriber_count = json_response['items'][0]['statistics']['subscriberCount']
+        video_count = json_response['items'][0]['statistics']['videoCount']
+        return view_count, subscriber_count, video_count
+
 def youtube_id_to_channel_name(developerKey, channelId):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
     YOUTUBE_API_ENDPOINT = "channels"
