@@ -53,6 +53,19 @@ def fill_all_statistics(developer_key, csv_input_file, csv_output_file):
     df.to_csv(csv_output_file, index=False)
     return
 
+def fill_result_statistics(developer_key, csv_input_file, csv_output_file):
+    df = pd.read_csv(csv_input_file)
+    df['ViewCount'] = df['VideosFound'].astype(object)
+
+    for index, row in df.iterrows():
+        if index >= 99:
+            print(df.loc[index, 'ChannelID'])
+            channel_id = df.at[index, 'ChannelID']
+            number_of_findable_videos = youtube_id_to_search_statistics(developer_key, channel_id)
+            df.at[index, 'VideosFound'] = number_of_findable_videos
+    df.to_csv(csv_output_file, index=False)
+    return
+
 # removes all whitespaces from YoutubeUsername column
 def remove_all_whitespaces(developer_key, csv_input_file, csv_output_file):
     df = pd.read_csv(csv_input_file)
@@ -73,10 +86,11 @@ def main():
         return
     CSV_INPUT_FILE = "channel_info_raw_data.csv"
     CSV_OUTPUT_FILE = CSV_INPUT_FILE
-    remove_all_whitespaces(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
-    fill_all_channel_ids(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
-    fill_all_google_names(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
-    fill_all_statistics(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
+    # remove_all_whitespaces(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
+    # fill_all_channel_ids(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
+    # fill_all_google_names(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
+    # fill_all_statistics(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
+    fill_result_statistics(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
 
 if __name__ == "__main__":
     main()
