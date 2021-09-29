@@ -9,6 +9,7 @@ import json
 import requests
 import html
 import math
+import dateutil
 
 # scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
 
@@ -109,45 +110,52 @@ def youtube_id_to_channel_name(developerKey, channelId):
         return channel_name
 
 def get_all_videos_from(developer_key, channel_id):
-    TOTAL_QUERY_MAX_RESULTS = 500
     PAGE_QUERY_MAX_RESULTS = 50
-    TOTAL_PAGES_LIMIT = math.floor(TOTAL_QUERY_MAX_RESULTS / PAGE_QUERY_MAX_RESULTS)
+    video_arr, last_published_video = get_max_query_videos_from(developer_key, channel_id, PAGE_QUERY_MAX_RESULTS, None)
+    while do_earlier_videos_exist(developer_key, channel_id, last_published_video, PAGE_QUERY_MAX_RESULTS):
+        print("New videos do exist")
+        new_video_arr, last_published_video = get_max_query_videos_from(developer_key, channel_id, PAGE_QUERY_MAX_RESULTS, last_published_video)
+        video_arr += new_video_arr
+    return video_arr
+
+def do_earlier_videos_exist(developer_key, channel_id, last_published_video, page_query_max_results):
+    is_there_next_page, videos_arr = get_page_of_videos_from(developer_key, channel_id, None, page_query_max_results, last_published_video)
+    if len(videos_arr) <= 1:        # seems like publishedBefore includes a video published at that exact time
+        return False
+    return True
+
+def get_max_query_videos_from(developer_key, channel_id, page_query_max_results, published_before):
+    TOTAL_QUERY_MAX_RESULTS = 500
     video_arr = []
-    next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, None, PAGE_QUERY_MAX_RESULTS)
+    next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, None, page_query_max_results, published_before)
     video_arr += new_video_dict_page
 
     while next_page_token != None:
-        print("Adding 50 more videos with page ID: {}".format(next_page_token))
-        next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, next_page_token, PAGE_QUERY_MAX_RESULTS)
+        print("Adding {} more videos with page ID: {}".format(page_query_max_results, next_page_token))
+        next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, next_page_token, page_query_max_results, published_before)
         video_arr += new_video_dict_page
-    print("Total number of videos found: {}\n".format(len(video_arr)))
-    return video_arr
+    last_video_published_date = video_arr[len(video_arr) - 1]['publish_time']
+    print("Total number of videos found: {}; Last published video: {}".format(len(video_arr), dateutil.parser.parse(last_video_published_date)))
+    return video_arr, last_video_published_date
 
-def get_page_of_videos_from(developer_key, channel_id, next_page_token, page_query_max_results):
+def get_page_of_videos_from(developer_key, channel_id, next_page_token, page_query_max_results, published_before):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
     YOUTUBE_API_ENDPOINT = "search"
     QUERY_PART = 'snippet'
     video_arr = []
 
+    query = {
+        'part': QUERY_PART,
+        'key': developer_key,
+        'channelId': channel_id,
+        'order': 'date',
+        'type': 'video',
+        'maxResults': page_query_max_results
+    }
     if (next_page_token != None):
-        query = {
-            'part': QUERY_PART,
-            'key': developer_key,
-            'channelId': channel_id,
-            'order': 'date',
-            'type': 'video',
-            'maxResults': page_query_max_results,
-            'pageToken': next_page_token
-        }
-    else:
-        query = {
-            'part': QUERY_PART,
-            'key': developer_key,
-            'channelId': channel_id,
-            'order': 'date',
-            'type': 'video',
-            'maxResults': page_query_max_results
-        }
+        query['pageToken'] = next_page_token
+    if (published_before != None):
+        query['publishedBefore'] = published_before
 
     url = YOUTUBE_API_URL + "/" + YOUTUBE_API_ENDPOINT
 
@@ -167,8 +175,6 @@ def get_page_of_videos_from(developer_key, channel_id, next_page_token, page_que
             'title': html.unescape(search_result['snippet']['title']),
             'publish_time': search_result['snippet']['publishTime']
         })
-
-    # if (len(video_arr) < )
 
     if (is_next_page_present):
         return is_next_page_present, video_arr
