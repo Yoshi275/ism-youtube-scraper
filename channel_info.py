@@ -8,6 +8,7 @@ import os
 import json
 import requests
 import html
+import math
 
 # scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
 
@@ -38,14 +39,14 @@ def youtube_id_to_search_statistics(developer_key, channel_id):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
     YOUTUBE_API_ENDPOINT = "search"
     QUERY_PART = 'snippet'
-    QUERY_MAX_RESULTS = 50
+    PAGE_QUERY_MAX_RESULTS = 50
     query = {
         'part': QUERY_PART,
         'key': developer_key,
         'channelId': channel_id,
         'order': 'date',
         'type': 'video',
-        'maxResults': QUERY_MAX_RESULTS
+        'maxResults': PAGE_QUERY_MAX_RESULTS
     }
 
     url = YOUTUBE_API_URL + "/" + YOUTUBE_API_ENDPOINT
@@ -108,22 +109,24 @@ def youtube_id_to_channel_name(developerKey, channelId):
         return channel_name
 
 def get_all_videos_from(developer_key, channel_id):
+    TOTAL_QUERY_MAX_RESULTS = 500
+    PAGE_QUERY_MAX_RESULTS = 50
+    TOTAL_PAGES_LIMIT = math.floor(TOTAL_QUERY_MAX_RESULTS / PAGE_QUERY_MAX_RESULTS)
     video_arr = []
-    next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, None)
+    next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, None, PAGE_QUERY_MAX_RESULTS)
     video_arr += new_video_dict_page
 
     while next_page_token != None:
         print("Adding 50 more videos with page ID: {}".format(next_page_token))
-        next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, next_page_token)
+        next_page_token, new_video_dict_page = get_page_of_videos_from(developer_key, channel_id, next_page_token, PAGE_QUERY_MAX_RESULTS)
         video_arr += new_video_dict_page
     print("Total number of videos found: {}\n".format(len(video_arr)))
     return video_arr
 
-def get_page_of_videos_from(developer_key, channel_id, next_page_token):
+def get_page_of_videos_from(developer_key, channel_id, next_page_token, page_query_max_results):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
     YOUTUBE_API_ENDPOINT = "search"
     QUERY_PART = 'snippet'
-    QUERY_MAX_RESULTS = 50
     video_arr = []
 
     if (next_page_token != None):
@@ -133,7 +136,7 @@ def get_page_of_videos_from(developer_key, channel_id, next_page_token):
             'channelId': channel_id,
             'order': 'date',
             'type': 'video',
-            'maxResults': QUERY_MAX_RESULTS,
+            'maxResults': page_query_max_results,
             'pageToken': next_page_token
         }
     else:
@@ -143,7 +146,7 @@ def get_page_of_videos_from(developer_key, channel_id, next_page_token):
             'channelId': channel_id,
             'order': 'date',
             'type': 'video',
-            'maxResults': QUERY_MAX_RESULTS
+            'maxResults': page_query_max_results
         }
 
     url = YOUTUBE_API_URL + "/" + YOUTUBE_API_ENDPOINT
@@ -152,8 +155,11 @@ def get_page_of_videos_from(developer_key, channel_id, next_page_token):
     json_response = json.loads(response.text) 
     if 'nextPageToken' in json_response:
         is_next_page_present = json_response['nextPageToken']
+        print("Found next page token")
+        print(is_next_page_present)
     else:
         is_next_page_present = False
+        print("Next page not found")
     for search_result in json_response['items']:
         video_arr.append({
             'video_id': search_result['id']['videoId'],
@@ -161,6 +167,8 @@ def get_page_of_videos_from(developer_key, channel_id, next_page_token):
             'title': html.unescape(search_result['snippet']['title']),
             'publish_time': search_result['snippet']['publishTime']
         })
+
+    # if (len(video_arr) < )
 
     if (is_next_page_present):
         return is_next_page_present, video_arr
