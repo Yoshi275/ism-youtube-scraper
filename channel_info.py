@@ -34,6 +34,27 @@ def youtube_username_to_id(developerKey, channelName):
         channel_id = json_response['items'][0]['id']
         return channel_id
 
+def youtube_id_to_search_statistics(developer_key, channel_id):
+    YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
+    YOUTUBE_API_ENDPOINT = "search"
+    QUERY_PART = 'snippet'
+    QUERY_MAX_RESULTS = 50
+    query = {
+        'part': QUERY_PART,
+        'key': developer_key,
+        'channelId': channel_id,
+        'order': 'date',
+        'type': 'video',
+        'maxResults': QUERY_MAX_RESULTS
+    }
+
+    url = YOUTUBE_API_URL + "/" + YOUTUBE_API_ENDPOINT
+
+    response = requests.get(url, params=query)
+    json_response = json.loads(response.text) 
+    number_of_results = json_response['pageInfo']['totalResults']
+    return number_of_results
+
 def youtube_id_to_statistics(developerKey, channel_id):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
     YOUTUBE_API_ENDPOINT = "channels"
