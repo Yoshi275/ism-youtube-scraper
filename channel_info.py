@@ -187,3 +187,27 @@ def get_page_of_videos_from(developer_key, channel_id, next_page_token, page_que
     else:
         return None, video_arr
     
+def channel_id_to_uploads_playlist(developer_key, channel_id):
+    # obtains the Youtuber's entire uploads playlist based on input channel_id given, pulling from YouTube Data API
+    YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
+    YOUTUBE_API_ENDPOINT = "channels"
+
+    query = {
+        'key': developer_key,
+        'id': channel_id,
+        'part': 'contentDetails'
+    }
+
+    url = YOUTUBE_API_URL + "/" + YOUTUBE_API_ENDPOINT
+
+    try:
+        response = requests.get(url, params=query)
+        json_response = json.loads(response.text)
+        assert 'items' in json_response
+    except AssertionError:
+        print("YouTube ID given is invalid. Please retry.")
+        return
+    else:
+        channel_name = json_response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+        return channel_name
+    return
