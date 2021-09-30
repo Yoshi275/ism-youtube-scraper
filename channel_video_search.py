@@ -5,9 +5,9 @@ from decouple import config
 
 ### COMMANDS TO RUN THIS:
 ### pip install -r requirements.txt
-### python main.py
+### python channel_video_search.py
 
-def main():
+def channel_video_search():
     print("In the format of a case-sensitive comma-separated list \ne.g.: danisnotonfire \ne.g.: j1mmyb0bba,PointlessBlog,id=UCPvi4_6AZtfND4ILv82s3wA")
     print("Accepts channel IDs (/channel/<CHANNEL_ID>) or usernames (/user/<USERNAME>) \nPut 'id=' in front of ID to retrieve videos by ID instead.")
     youtuber_username_or_id_inputs = input("Enter YouTubers to retrieve videos from: \n")
@@ -74,4 +74,4 @@ def generate_csv_of_videos_from_youtuber(channel_name):
         generate_csv_of_videos(DEVELOPER_KEY, channel_id, CHANNEL_NAME, CSV_FILE_NAME)
 
 if __name__ == "__main__":
-    main()
+    channel_video_search()
