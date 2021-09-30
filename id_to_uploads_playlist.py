@@ -37,13 +37,15 @@ def generate_csv_of_videos_from_youtube_channel_id(channel_id):
     if not videos:
         print("Video retrieval failed. Please try again.")
         return
-    temp_videos_df = pd.DataFrame(videos)
-    print(temp_videos_df)
+    # temp_videos_df = pd.DataFrame(videos)
+    # print(temp_videos_df)
     videos_df = pd.DataFrame(columns=['VideoID', 'Title', 'UploaderUsername', 'DateUploaded', 'VideoLink', 'Status', 'Description', 'ThumbnailLink', 'IsCollab', 'Featuring', 'RelatedVideos', 'CollaboratorId'])
     print("generating csv at {}".format(CSV_FILE_NAME))
 
-    for index, row in temp_videos_df.iterrows():
-        # is_video_collab = is_collaboration()
+    for index in range(len(videos)):
+        if (index % 100 == 0):
+            print("Just added the first {} videos!".format(index))
+        row = videos[index]
         new_row = {
             'VideoID': row['video_id'],
             'Title': row['title'],
@@ -56,6 +58,7 @@ def generate_csv_of_videos_from_youtube_channel_id(channel_id):
         }
         videos_df = videos_df.append(new_row, ignore_index=True)
     videos_df.to_csv(CSV_FILE_NAME, index=False)
+    print("Okay, videos added to CSV file {} at last. Enjoy!".format(CSV_FILE_NAME))
 
 if __name__ == "__main__":
     id_to_uploads_playlist()
