@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Sample Python code for youtube.channels.list
 # See instructions for running these code samples locally:
 # https://developers.google.com/explorer-help/guides/code_samples#python
 
@@ -11,15 +10,22 @@ import html
 import math
 import dateutil
 
-# scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
+### definitions:
+#### usernames: youtube.com/user/<USERNAME> in link
+#### channel_id: youtube.com/channel/<channel_id> in link
+#### video_id: youtube.com/watch?v=<video_id> in link
+#### playlist_id: youtube.com/playlist?list=<playlist_id> in link
 
-def youtube_username_to_id(developerKey, channelName):
+### instructions:
+#### obtain the developer key from Google console, with access to the YouTube Data API V3 - instructions here: https://developers.google.com/youtube/v3/getting-started
+
+def youtube_username_to_id(developer_key, channel_name):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
     YOUTUBE_API_ENDPOINT = "channels"
 
     query = {
-        'key': developerKey,
-        'forUsername': channelName,
+        'key': developer_key,
+        'forUsername': channel_name,
         'part': 'id'
     }
 
@@ -57,12 +63,12 @@ def youtube_id_to_search_statistics(developer_key, channel_id):
     number_of_results = json_response['pageInfo']['totalResults']
     return number_of_results
 
-def youtube_id_to_statistics(developerKey, channel_id):
+def youtube_id_to_statistics(developer_key, channel_id):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
     YOUTUBE_API_ENDPOINT = "channels"
 
     query = {
-        'key': developerKey,
+        'key': developer_key,
         'id': channel_id,
         'part': 'statistics'
     }
@@ -86,12 +92,12 @@ def youtube_id_to_statistics(developerKey, channel_id):
         video_count = json_response['items'][0]['statistics']['videoCount']
         return view_count, subscriber_count, video_count
 
-def youtube_id_to_channel_name(developerKey, channelId):
+def youtube_id_to_channel_name(developer_key, channelId):
     YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3"
     YOUTUBE_API_ENDPOINT = "channels"
 
     query = {
-        'key': developerKey,
+        'key': developer_key,
         'id': channelId,
         'part': 'snippet'
     }
