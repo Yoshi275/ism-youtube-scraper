@@ -11,6 +11,7 @@ def get_all_videos_from_playlist_id(developer_key, playlist_id):
     ## for uploads playlists, ordered by newest -> oldest
     video_arr = []
     next_page_token, new_video_dict_page = get_page_of_videos_from_playlist_id(developer_key, playlist_id, None)
+    video_arr += new_video_dict_page
 
     while next_page_token != None:
         next_page_token, new_video_dict_page = get_page_of_videos_from_playlist_id(developer_key, playlist_id, next_page_token)
