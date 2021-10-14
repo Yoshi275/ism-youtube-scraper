@@ -49,6 +49,7 @@ def generate_csv_of_videos_from_youtube_channel_id(channel_id):
         new_row = {
             'VideoID': row['video_id'],
             'Title': row['title'],
+            'UploaderUsername': CHANNEL_NAME,
             'UploaderId': row['channel_id'],
             'DateUploaded': row['published_time'],
             'VideoLink': "youtube.com/watch?v=" + row['video_id'],
@@ -57,7 +58,7 @@ def generate_csv_of_videos_from_youtube_channel_id(channel_id):
             'ThumbnailLink': row['thumbnail_link']
         }
         videos_df = videos_df.append(new_row, ignore_index=True)
-    videos_df.to_csv(CSV_FILE_NAME, index=False)
+    videos_df.to_csv(CSV_FILE_NAME, index=False,encoding='utf-8-sig')
     print("Okay, videos added to CSV file {} at last. Enjoy!".format(CSV_FILE_NAME))
 
 if __name__ == "__main__":

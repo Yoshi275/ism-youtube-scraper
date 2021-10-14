@@ -49,9 +49,9 @@ def get_page_of_videos_from_playlist_id(developer_key, playlist_id, next_page_to
     for search_result in json_response['items']:
         video_arr.append({
             'video_id': search_result['contentDetails']['videoId'],
-            'title': html.unescape(search_result['snippet']['title']),
+            'title': search_result['snippet']['title'],
             'channel_id': search_result['snippet']['channelId'],
-            'description': html.unescape(search_result['snippet']['description']),
+            'description': search_result['snippet']['description'],
             'thumbnail_link': search_result['snippet']['thumbnails']['default']['url'],
             'published_time': search_result['contentDetails']['videoPublishedAt'],
             'privacy_status': search_result['status']['privacyStatus']
