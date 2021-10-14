@@ -84,13 +84,13 @@ def main():
     except:
         print("API key loading failed. Please check that you have a .env file containing the DEVELOPER_KEY variable, a valid YouTube Data API key")
         return
-    CSV_INPUT_FILE = "channel_info_raw_data.csv"
+    CSV_INPUT_FILE = "output/Channels/channel_info_raw_data.csv"
     CSV_OUTPUT_FILE = CSV_INPUT_FILE
     # remove_all_whitespaces(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
     # fill_all_channel_ids(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
     # fill_all_google_names(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
-    # fill_all_statistics(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
-    fill_result_statistics(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
+    fill_all_statistics(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
+    # fill_result_statistics(DEVELOPER_KEY, CSV_INPUT_FILE, CSV_OUTPUT_FILE)
 
 if __name__ == "__main__":
     main()
