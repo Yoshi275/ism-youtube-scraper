@@ -41,11 +41,8 @@ def video_ids_to_viewcount(developer_key, video_ids, batch_size):
     json_response = json.loads(response.text) 
     viewcounts_arr = {}
     for video in json_response['items']:
-        print(video)
         video_id = video['id']
         if 'viewCount' in video['statistics']:  # not a guaranteed value in the JSON. sometimes can be missing. If so, no dict item created
             viewcount = video['statistics']['viewCount']
-            viewcounts_arr[video_id] = viewcount 
-    print("PRINTING VIEWCOUNTS")
-    print(viewcounts_arr)
+            viewcounts_arr[video_id] = viewcount
     return viewcounts_arr
