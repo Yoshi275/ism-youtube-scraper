@@ -23,7 +23,7 @@ def channel_usernames_to_ids():
     channel_ids = []
     for username in username_arr:
         new_channel_id = youtube_username_to_id(DEVELOPER_KEY, username)
-        channel_ids += new_channel_id
+        channel_ids.append(new_channel_id)
     print(",".join(channel_ids))
 
 if __name__ == "__main__":
