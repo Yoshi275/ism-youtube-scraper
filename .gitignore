@@ -1,4 +1,5 @@
 *.csv
+*.json
 !example_videos.csv
 env/
 venv/
