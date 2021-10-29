@@ -1,18 +1,26 @@
 import os
 import pandas as pd
-# import spacy
-# import logging
-# import traceback
+import spacy
 from google.cloud import language
 
 ### COMMANDS TO RUN THIS:
 ### pip install -r requirements.txt
 ### python entity_recognition_model.py (ensure input file path is valid)
 
-# ensure that containing folder contains a file named gservice_account.json, storing the service account key info. Follow https://cloud.google.com/natural-language/docs/quickstart-client-libraries
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "gservice_account.json"
-# language = "en"     # setting the language for the entity recogniser
-client = language.LanguageServiceClient()
+from enum import Enum
+class Model(Enum):
+    GOOGLE_MODEL = "google_nlp"
+    SPACY_MODEL = "spacy"
+
+ENTITY_RECOGNITION_MODEL = "google_nlp"     # options: google_nlp, spacy
+
+if (ENTITY_RECOGNITION_MODEL == Model.GOOGLE_MODEL):
+    # ensure that containing folder contains a file named gservice_account.json, storing the service account key info. Follow https://cloud.google.com/natural-language/docs/quickstart-client-libraries
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "gservice_account.json"
+    # language = "en"     # setting the language for the entity recogniser
+    client = language.LanguageServiceClient()
+elif (ENTITY_RECOGNITION_MODEL == Model.SPACY_MODEL):
+    spacy_entity_rec = spacy.load("en_core_web_lg")
 
 FILE_TYPE = ".csv"
 INPUT_CSV_FILE_NAME = "test_videos"
@@ -23,17 +31,28 @@ print("Generating entity results at {}".format(OUTPUT_CSV_FILE_PATH))
 
 def analyze_text_entities_for_video(video_id, text):
     entities_df = pd.DataFrame(columns=['VideoID', 'Name', 'Type', 'Salience'])     # global dataframe to store all entity models wuhu
-    document = language.Document(content=text, type_=language.Document.Type.PLAIN_TEXT)
-    response = client.analyze_entities(document=document)
-    for entity in response.entities:
-        new_row = {
-            'VideoID': video_id,
-            'Name': entity.name,
-            'Type': entity.type_.name,
-            'Salience': f"{entity.salience:.1%}"
-        }
-        print(new_row)
-        entities_df = entities_df.append(new_row, ignore_index=True)
+    if (ENTITY_RECOGNITION_MODEL == Model.GOOGLE_MODEL):
+        document = language.Document(content=text, type_=language.Document.Type.PLAIN_TEXT)
+        response = client.analyze_entities(document=document)
+        for entity in response.entities:
+            new_row = {
+                'VideoID': video_id,
+                'Name': entity.name,
+                'Type': entity.type_.name,
+                'Salience': f"{entity.salience:.1%}"
+            }
+            print(new_row)
+            entities_df = entities_df.append(new_row, ignore_index=True)
+    elif (ENTITY_RECOGNITION_MODEL == Model.SPACY_MODEL):
+        response = spacy_entity_rec(text)
+        for entity in response.ents:
+            new_row = {
+                'VideoID': video_id,
+                'Name': entity.text,
+                'Type': entity.label_
+            }
+            print(new_row)
+            entities_df = entities_df.append(new_row, ignore_index=True)
     entities_df.to_csv(OUTPUT_CSV_FILE_PATH, index=False, encoding='utf-8-sig', mode='a')
     print("Entities found and added for video ID {}".format(video_id))
 
