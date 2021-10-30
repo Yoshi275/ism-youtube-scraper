@@ -22,6 +22,7 @@ if (ENTITY_RECOGNITION_MODEL == Model.GOOGLE_MODEL):
     client = language.LanguageServiceClient()
 elif (ENTITY_RECOGNITION_MODEL == Model.SPACY_MODEL):
     spacy_entity_rec = spacy.load("en_core_web_lg")
+isFirstVideoAnalysis = True
 
 FILE_TYPE = ".csv"
 INPUT_CSV_FILE_NAME = "test_videos"
@@ -31,6 +32,7 @@ OUTPUT_CSV_FILE_PATH = INPUT_CSV_FILE_NAME + "_entities_new" + FILE_TYPE
 print("Generating entity results at {}".format(OUTPUT_CSV_FILE_PATH))
 
 def analyze_text_entities_for_video(video_id, text):
+    global isFirstVideoAnalysis
     entities_df = pd.DataFrame(columns=['VideoID', 'Name', 'Type', 'Salience'])     # global dataframe to store all entity models wuhu
     if (ENTITY_RECOGNITION_MODEL == Model.GOOGLE_MODEL):
         document = language.Document(content=text, type_=language.Document.Type.PLAIN_TEXT)
@@ -54,7 +56,11 @@ def analyze_text_entities_for_video(video_id, text):
             }
             print(new_row)
             entities_df = entities_df.append(new_row, ignore_index=True)
-    entities_df.to_csv(OUTPUT_CSV_FILE_PATH, index=False, encoding='utf-8-sig', mode='a')
+    if isFirstVideoAnalysis:
+        entities_df.to_csv(OUTPUT_CSV_FILE_PATH, index=False, encoding='utf-8-sig', mode='a')
+        isFirstVideoAnalysis = False
+    else:
+        entities_df.to_csv(OUTPUT_CSV_FILE_PATH, index=False, header=False, encoding='utf-8-sig', mode='a')
     print("Entities found and added for video ID {}".format(video_id))
 
 def run_entity_recogniser_on_csv():
