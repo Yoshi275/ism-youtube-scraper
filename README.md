@@ -40,19 +40,23 @@
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
+        <li><a href="#modules">Modules</a></li>
       </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
+    <li>
+      <a href="#usage">Usage</a>
+      <ul>
+        <li><a href="#using-youtube-scraper">Using YouTube Scraper</a></li>
+        <li><a href="#using-entity-recognition-model">Using Entity Recognition Model</a></li>
+        <li><a href="#using-machine-learning-model">Using Machine Learning Model</a></li>
+      </ul>
+    </li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -99,13 +103,17 @@
    ```js
    const DEVELOPER_KEY = 'ENTER YOUR API';
    ```
-
+5. If using spaCy entity recognition model, download model
+    ```sh
+    python -m spacy download en_core_web_lg
+    ```
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
 <!-- USAGE EXAMPLES -->
-## Usage of YouTube Scraper
+## Usage
+### Using YouTube Scraper
 
 1.  Enter the `youtube_api_scrapper` folder
 2.  Run `python <FILE_NAME.py>` with the following files:
@@ -113,7 +121,21 @@
     * `video_info_table_populator.py` - gives video information based on video ID
     * `channels_to_ids.py` - converts channel usernames into unique YouTube channel IDs
     * `id_to_uploads_playlist.py` - gets all videos from specified channel ID
-    
+
+### Using Entity Recognition Model
+
+1.  Enter the `.\collab_labelling\entity_recognition` folder
+2.  Ensure that there is a `gservice_account.json` file within the    folder, and an input file named according to the `INPUT_CSV_FILE_NAME` in `entity_recognition_model.py` in the same folder. The default input file name to be read is `test_videos.csv`
+3.  In the `entity_recognition_model.py`, change the following variables as relevant:
+    *   ENTITY_RECOGNITION_MODEL - options: Model.GOOGLE_MODEL, Model.SPACY_MODEL. This determines the ER model being used
+    *   INPUT_CSV_FILE_NAME and OUTPUT_CSV_FILE_NAME - This determines the input and output files. The input file reads the same structure as that of the video data in OneDrive. The output file returns 
+    *   SELECTED_COLS - This determines the names of the relevant columns, which has text that you want to run through the ER model. In the background, we simply combine all texts into one to send through the ER model.
+
+### Using Machine Learning Model
+
+1.  Enter the `.\collab_labelling\machine_learning` folder
+2.  Run `jupyter notebook` within the folder
+3.  Run code on Jupyter notebook environment
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
